@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Calendario de Reservas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+        }
+
+        #calendar {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        #detalleReserva {
+            margin-top: 30px;
+            background: #f6fbff;
+            padding: 15px;
+            border-radius: 7px;
+            border: 1px solid #d2eaff;
+        }
+
+        .sin-reservas {
+            color: #888;
+            font-style: italic;
+        }
+
+        /* Filtro visual */
+        .filtros-barra {
+            display: flex;
+            align-items: center;
+            gap: 1.5em;
+            justify-content: flex-start;
+            padding: 1.5em 0;
+            background: #f3faff;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(34, 187, 51, 0.06);
+            max-width: 950px;
+            margin-left: auto;
+            margin-right: auto;
+            flex-wrap: wrap;
+        }
+
+        .filtros-barra label {
+            font-weight: bold;
+            color: #2b5876;
+            font-size: 1.12em;
+        }
+
+        .filtros-barra select,
+        .filtros-barra input[type="text"] {
+            background: #f8fbff;
+            border: 1px solid #a7c4e6;
+            color: #245;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 1em;
+            min-width: 180px;
+            transition: border 0.2s;
+        }
+
+        .filtros-barra select:focus,
+        .filtros-barra input[type="text"]:focus {
+            outline: none;
+            border: 2px solid #007bff;
+        }
+
+        .filtros-barra button {
+            background: linear-gradient(90deg, #28a745, #42e695);
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            padding: 9px 26px 9px 18px;
+            font-size: 1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.13);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .filtros-barra button:hover {
+            background: linear-gradient(90deg, #1e8132, #28a745);
+            box-shadow: 0 4px 16px rgba(40, 167, 69, 0.19);
+        }
+
+        .buscador-barra {
+            display: flex;
+            align-items: center;
+            gap: 1em;
+            justify-content: flex-start;
+            background: #e7f2ff;
+            padding: 1em 1.5em;
+            border-radius: 7px;
+            max-width: 950px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 1px 4px rgba(0, 123, 255, 0.07);
+        }
+
+        .buscador-barra input[type="text"] {
+            width: 320px;
+            max-width: 95vw;
+        }
+
+        @media (max-width: 800px) {
+
+            .filtros-barra,
+            .buscador-barra {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8em;
+            }
+
+            #calendar {
+                max-width: 100%;
+            }
+
+            .buscador-barra input[type="text"] {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <center>
+            <h1>Calendario de Reservas</h1>
+        </center>
+        <div class="filtros-barra">
+            <label for="sucursalFiltro">Sucursal:</label>
+            <select id="sucursalFiltro"></select>
+            <button id="verCalendarioBtn">
+                <svg height="18" width="18" viewBox="0 0 20 20" fill="none">
+                    <rect width="20" height="20" fill="none" />
+                    <path
+                        d="M6 2V4M14 2V4M3 8.5H17M5 6H15C16.1046 6 17 6.89543 17 8V16C17 17.1046 16.1046 18 15 18H5C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 6 5 6Z"
+                        stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Ver calendario
+            </button>
+        </div>
+        <!-- Buscador (inicialmente oculto) -->
+        <div class="buscador-barra" id="buscadorBarra" style="display:none;">
+            <label for="busquedaInput">Buscar:</label>
+            <input type="text" id="busquedaInput" placeholder="Por empresa, trabajador o RUT..." autocomplete="off" />
+        </div>
+        <div id="calendar"></div>
+        <div id="detalleReserva"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script>
+        const apiUrl = "http://localhost:3000/api";
+        let reservas = [];
+        let reservasPorId = {};
+        let calendar = null;
+        let reservasFiltradas = [];
+
+        async function fetchSucursales() {
+            const res = await fetch(apiUrl + "/catalogos/sucursales");
+            const sucursales = await res.json();
+            const select = document.getElementById('sucursalFiltro');
+            select.innerHTML = '<option value="">Seleccione...</option>' +
+                sucursales.map(s => `<option value="${s.id}">${s.nombre}</option>`).join('');
+        }
+
+        async function fetchReservas() {
+            const res = await fetch(apiUrl + "/reservas");
+            const data = await res.json();
+            reservas = data;
+            reservasPorId = {};
+            for (const r of reservas) reservasPorId[r.id] = r;
+        }
+
+        function mapReservasToEvents(reservas) {
+            return reservas.map(r => ({
+                id: String(r.id),
+                title: r.tipoReserva === "empresa"
+                    ? ` ${r.empresa?.nombre ?? '-'}`
+                    : ` ${(r.reservasTrabajador?.[0]?.trabajador?.nombre ?? '-')}`,
+                start: r.fechaHora,
+                backgroundColor: r.tipoReserva === "empresa" ? "#007bff" : "#22bb33",
+                borderColor: "#333"
+            }));
+        }
+
+        function filtrarReservas() {
+            const sucursalId = document.getElementById('sucursalFiltro').value;
+            const texto = document.getElementById('busquedaInput').value.trim().toLowerCase();
+            let filtradas = reservas;
+            if (sucursalId) {
+                filtradas = filtradas.filter(r => String(r.sucursalId) === String(sucursalId));
+            }
+            if (texto) {
+                filtradas = filtradas.filter(r => {
+                    const empresa = r.empresa?.nombre?.toLowerCase() ?? '';
+                    const matchEmpresa = empresa.includes(texto);
+                    const matchTrabajador = (r.reservasTrabajador ?? []).some(rt =>
+                        (rt.trabajador?.nombre?.toLowerCase()?.includes(texto)) ||
+                        (rt.trabajador?.rutPasaporte?.toLowerCase()?.includes(texto))
+                    );
+                    return matchEmpresa || matchTrabajador;
+                });
+            }
+            reservasFiltradas = filtradas;
+            return filtradas;
+        }
+
+        function renderCalendar() {
+            const eventos = mapReservasToEvents(reservasFiltradas);
+            const calendarEl = document.getElementById('calendar');
+            calendarEl.innerHTML = '';
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'es',
+                initialView: 'dayGridMonth',
+                events: eventos,
+                eventClick: function (info) {
+                    mostrarDetalleReserva(reservasPorId[info.event.id]);
+                },
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listMonth'
+                },
+                eventDidMount: function (info) {
+                    info.el.title = "Click para ver detalle";
+                }
+            });
+            calendar.render();
+            document.getElementById('detalleReserva').innerHTML = '';
+        }
+
+        function mostrarDetalleReserva(reserva) {
+            let html = `
+                <h3>Reserva #${reserva.id}</h3>
+                <strong>Tipo de Reserva:</strong> ${reserva.tipoReserva?.toUpperCase() || '-'}<br>
+                <strong>Sucursal:</strong> ${reserva.sucursal?.nombre || '-'}<br><br>
+            `;
+            if (reserva.tipoReserva === 'empresa') {
+                html += `
+                    <strong>Empresa:</strong> ${reserva.empresa?.nombre || '-'}<br>
+                    <strong>RUT:</strong> ${reserva.empresa?.rut || '-'}<br>
+                    <strong>Dirección:</strong> ${reserva.empresa?.direccion || '-'}<br>
+                    <strong>Giro:</strong> ${reserva.empresa?.giro || '-'}<br><br>
+                    <strong>Solicitante:</strong> ${reserva.solicitante?.nombre || '-'}<br>
+                    <strong>Cargo:</strong> ${reserva.solicitante?.cargo || '-'}<br>
+                    <strong>Teléfono:</strong> ${reserva.solicitante?.telefono || '-'}<br>
+                    <strong>Correo:</strong> ${reserva.solicitante?.correo || '-'}<br><br>
+                `;
+                html += `<strong>Trabajadores:</strong>`;
+                if (reserva.reservasTrabajador?.length) {
+                    html += `<ul>`;
+                    html += reserva.reservasTrabajador.map(rt => `
+                        <li>
+                            <b>Nombre:</b> ${rt.trabajador?.nombre ?? ''} -
+                            <b>RUT/Pasaporte:</b> ${rt.trabajador?.rutPasaporte ?? ''} -
+                            <b>Edad:</b> ${rt.edad ?? '-'} -
+                            <b>Cargo:</b> ${rt.cargo ?? '-'}
+                            ${rt.correo ? '- <b>Correo:</b> ' + rt.correo : ''}
+                        </li>
+                    `).join('');
+                    html += `</ul>`;
+                } else {
+                    html += ' <span class="sin-reservas">Sin trabajadores asociados</span>';
+                }
+            }
+            if (reserva.tipoReserva === 'particular') {
+                const t = reserva.reservasTrabajador && reserva.reservasTrabajador[0];
+                html += `<strong>Datos:</strong><br><br>`;
+                if (t) {
+                    html += `
+                        <strong>Nombre:</strong> ${t.trabajador?.nombre ?? ''}<br>
+                        <strong>RUT/Pasaporte:</strong> ${t.trabajador?.rutPasaporte ?? ''}<br>
+                        <strong>Edad:</strong> ${t.edad ?? '-'}<br>
+                        <strong>Cargo:</strong> ${t.cargo ?? '-'}<br>
+                        ${t.correo ? '<strong>Correo:</strong> ' + t.correo : ''}<br>
+                    `;
+                } else {
+                    html += ' <span class="sin-reservas">Sin trabajadores asociados</span>';
+                }
+            }
+
+            if (reserva.bateriasMedicas?.length) {
+                html += `<br><strong>Baterías Médicas:</strong> ${reserva.bateriasMedicas.map(b => b.nombre).join(', ')}`;
+            }
+            if (reserva.examenesAdicionales?.length) {
+                html += `<br><strong>Exámenes Adicionales:</strong> ${reserva.examenesAdicionales.map(e => e.nombre).join(', ')}`;
+            }
+            if (reserva.pruebasDrogas?.length) {
+                html += `<br><strong>Pruebas de Drogas:</strong> ${reserva.pruebasDrogas.map(p => p.nombre).join(', ')}`;
+            }
+            document.getElementById('detalleReserva').innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            await fetchSucursales();
+            await fetchReservas();
+
+            // Botón para mostrar calendario por sucursal
+            document.getElementById('verCalendarioBtn').addEventListener('click', () => {
+                const sucursalId = document.getElementById('sucursalFiltro').value;
+                if (!sucursalId) {
+                    alert("Selecciona una sucursal para ver el calendario.");
+                    return;
+                }
+                // Muestra el buscador y limpia su valor
+                document.getElementById('buscadorBarra').style.display = '';
+                document.getElementById('busquedaInput').value = '';
+                filtrarReservas();
+                renderCalendar();
+            });
+
+            // Buscador dinámico solo después de mostrar el calendario
+            document.getElementById('busquedaInput').addEventListener('input', function () {
+                filtrarReservas();
+                renderCalendar();
+            });
+
+            // Cambio de sucursal, oculta buscador y limpia todo
+            document.getElementById('sucursalFiltro').addEventListener('change', function () {
+                document.getElementById('buscadorBarra').style.display = 'none';
+                document.getElementById('detalleReserva').innerHTML = "";
+                document.getElementById('calendar').innerHTML = "";
+            });
+        });
+    </script>
+</body>
+
+</html>
