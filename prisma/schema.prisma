@@ -1,0 +1,117 @@
+// schema.prisma
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Sucursal {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  reservas Reserva[]
+  usuarios Usuario[]
+}
+
+model BateriaMedica {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  reservas Reserva[] @relation("ReservaBateriasMedicas")
+}
+
+model ExamenAdicional {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  reservas Reserva[] @relation("ReservaExamenesAdicionales")
+}
+
+model PruebaDrogas {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  reservas Reserva[] @relation("ReservaPruebasDrogas")
+}
+
+model Solicitante {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  cargo    String
+  telefono String
+  correo   String
+  reservas Reserva[]
+}
+
+model Empresa {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  rut       String    @unique
+  direccion String
+  giro      String
+  reservas  Reserva[]
+}
+
+model Trabajador {
+  id           Int                 @id @default(autoincrement())
+  nombre       String
+  rutPasaporte String              @unique
+  reservas     ReservaTrabajador[]
+}
+
+model Reserva {
+  id                Int      @id @default(autoincrement())
+  tipoReserva       String
+  fechaHora         DateTime
+  estado            String   @default("pendiente")
+  modificacionCount Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  sucursalId Int
+  sucursal   Sucursal @relation(fields: [sucursalId], references: [id])
+
+  solicitanteId Int?
+  solicitante   Solicitante? @relation(fields: [solicitanteId], references: [id])
+
+  empresaId Int?
+  empresa   Empresa? @relation(fields: [empresaId], references: [id])
+
+  // Relación muchos a muchos con datos variables
+  reservasTrabajador ReservaTrabajador[]
+
+  // Relaciones muchos a muchos con catálogos
+  bateriasMedicas     BateriaMedica[]   @relation("ReservaBateriasMedicas")
+  examenesAdicionales ExamenAdicional[] @relation("ReservaExamenesAdicionales")
+  pruebasDrogas       PruebaDrogas[]    @relation("ReservaPruebasDrogas")
+}
+
+model ReservaTrabajador {
+  id           Int @id @default(autoincrement())
+  reservaId    Int
+  trabajadorId Int
+
+  // Datos variables para ESTA reserva
+  cargo  String
+  correo String?
+  edad   Int
+
+  reserva    Reserva    @relation(fields: [reservaId], references: [id])
+  trabajador Trabajador @relation(fields: [trabajadorId], references: [id])
+
+  @@unique([reservaId, trabajadorId])
+}
+
+// USUARIOS que pueden ingresar a ver el calendario y reservas
+model Usuario {
+  id         Int       @id @default(autoincrement())
+  username   String    @unique   // Usaremos este campo para login
+  contrasena String    // Aquí se almacena el hash de la contraseña
+  rol        String    // Ejemplo: 'admin', 'sucursal'
+  sucursal   Sucursal? @relation(fields: [sucursalId], references: [id])
+  sucursalId Int?
+}
+
+
+
+
