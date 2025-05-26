@@ -233,6 +233,9 @@ export async function modificarReserva(req, res) {
     if (!existente)
       return res.status(404).json({ error: 'Reserva no encontrada' });
 
+    if (existente.estado === 'cancelada'){
+      return res.status(400).json({ error: 'No se puede modificar una reserva cancelada' });
+    }
     if (existente.modificacionCount >= 1)
       return res.status(400).json({ error: 'Solo una modificación permitida' });
 

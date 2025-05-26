@@ -9,56 +9,96 @@
 <body>
   <div class="container mt-5">
     <h2>Editar Reserva</h2>
-    <form id="formEditarReserva">
-      <div class="mb-3">
-        <label for="tipoReserva" class="form-label">Tipo de Reserva</label>
-        <input type="text" class="form-control" id="tipoReserva" readonly>
-      </div>
-       <div class="mb-3">
-        <label for="sucursal" class="form-label">Sucursal</label>
-        <input type="text" class="form-control" id="sucursal" readonly>
-      </div>
-      <div class="mb-3">
-        <label for="fechaHora" class="form-label">Fecha</label>
-        <input type="date" class="form-control" id="fechaHora" required>
-      </div>
-       <div class="mb-3">
-        <label for="hora" class="form-label">Hora</label>
-        <input type="time" class="form-control" id="hora" required>
-      </div>
-      <div class="mb-3">
-        <h3>Datos Solicitante</h3>
-        <label for="nombreSolicitante" class="form-label">Nombre Solicitante</label>
-        <input type="text" class="form-control" id="nombreSolicitante" readonly>
-      </div>
-      <div class="mb-3">
-        <label for="correoSolicitante" class="form-label">Correo Solicitante</label>
-        <input type="text" class="form-control" id="correoSolicitante" readonly>
-      </div>
-      <div class="mb-3">
-        <label for="empresaSolicitante" class="form-label">Empresa Solicitante</label>
-        <input type="text" class="form-control" id="empresaSolicitante" readonly>
-      </div>
-      <h4>Trabajadores</h4>
-      <div id="trabajadoresContainer"></div>
+<form id="formEditarReserva">
+  <!-- Sección Empresa -->
+  <div id="datosEmpresa" style="display: none;">
+    <div class="mb-3">
+      <label class="form-label">Tipo de Reserva</label>
+      <input type="text" class="form-control tipoReserva" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Sucursal</label>
+      <input type="text" class="form-control sucursal" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Fecha</label>
+      <input type="date" class="form-control fechaHora" data-requiere-validacion>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Hora</label>
+      <input type="time" class="form-control hora" data-requiere-validacion>
+    </div>
+    <div class="mb-3">
+      <h3>Datos Solicitante</h3>
+      <label class="form-label">Nombre Solicitante</label>
+      <input type="text" class="form-control nombreSolicitante" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Correo Solicitante</label>
+      <input type="text" class="form-control correoSolicitante" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Empresa Solicitante</label>
+      <input type="text" class="form-control empresaSolicitante" readonly>
+    </div>
 
-<div class="mb-3">
-  <label for="bateriasMedicas" class="form-label">Baterias Medicas</label>
-<select id="bateriasMedicas" class="form-select" multiple required></select>
-</div>
-<div class="mb-3">
-<label for="examenesAdicionales" class="form-label">Examenes Adionales</label>
-<select id="examenesAdicionales" class="form-select" multiple required></select>
-</div>
+    <h4>Trabajadores</h4>
+    <div class="trabajadoresContainer"></div>
 
-<div class="mb-3">
-<label for="pruebasDrogas" class="form-label">Pruebas Drogas</label>
-<select id="pruebasDrogas" class="form-select" multiple required></select>
-</div>
-<button type="submit" class="btn btn-primary">Guardar Cambios</button>
-<button type="button" class="btn btn-secondary" id="btnCancelar">Cancelar</button>
-    </form>
+    <div class="mb-3">
+      <label class="form-label">Baterías Médicas</label>
+      <select class="form-select bateriasMedicas" multiple data-requiere-validacion></select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Exámenes Adicionales</label>
+      <select class="form-select examenesAdicionales" multiple data-requiere-validacion></select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Pruebas Drogas</label>
+      <select class="form-select pruebasDrogas" multiple data-requiere-validacion></select>
+    </div>
   </div>
+
+  <!-- Sección Particular -->
+  <div id="datosParticular" style="display: none;">
+    <div class="mb-3">
+      <label class="form-label">Tipo de Reserva</label>
+      <input type="text" class="form-control tipoReserva" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Sucursal</label>
+      <input type="text" class="form-control sucursal" readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Fecha</label>
+      <input type="date" class="form-control fechaHora" data-requiere-validacion>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Hora</label>
+      <input type="time" class="form-control hora" data-requiere-validacion>
+    </div>
+
+    <h4>Trabajadores</h4>
+    <div class="trabajadoresContainer"></div>
+
+    <div class="mb-3">
+      <label class="form-label">Baterías Médicas</label>
+      <select class="form-select bateriasMedicas" multiple data-requiere-validacion></select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Exámenes Adicionales</label>
+      <select class="form-select examenesAdicionales" multiple data-requiere-validacion></select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Pruebas Drogas</label>
+      <select class="form-select pruebasDrogas" multiple data-requiere-validacion></select>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+  <button type="button" class="btn btn-secondary" id="btnCancelar">Cancelar</button>
+</form>
+
 
 <template id="trabajadorTemplate">
     <div class="trabajador-item border p-2 mb-2">
@@ -90,12 +130,48 @@
       </div>
     </div>
   </template>
+<!-- 
+  <template id="trabajadorTemplateParticular">
+    <div class="trabajador-itemParticular border p-2 mb-2">
+      <input type="hidden" class="trabajador-id">
+      <div class="row">
+        <div class="col">
+          <label>Nombre</label>
+          <input type="text" class="form-control trabajador-nombre">
+        </div>
+        <div class="col">
+          <label>RUT</label>
+          <input type="text" class="form-control trabajador-rut">
+        </div>
+        <div class="col">
+          <label>Cargo</label>
+          <input type="text" class="form-control trabajador-cargo">
+        </div>
+        <div class="col">
+          <label>Edad</label>
+          <input type="number" class="form-control trabajador-edad">
+        </div>
+        <div class="col">
+          <label>Correo</label>
+          <input type="email" class="form-control trabajador-correo">
+        </div>
+        <div class="col-auto d-flex align-items-end">
+          <button type="button" class="btn btn-danger btn-sm remove-trabajador">X</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+-->
 </body>
 </html>
 
   <script>
    document.addEventListener("DOMContentLoaded", () => {
   const reservaId = new URLSearchParams(window.location.search).get("id");
+
+  let formularioActivo = null;
+
   if (!reservaId) return alert("ID de reserva no especificado.");
 
     const tipoReserva = document.getElementById("tipoReserva");
@@ -138,90 +214,159 @@ function getSelectValues(select) {
   return result;
 }
 
-  async function cargarDatosReserva() {
-    try {
-      const res = await fetch(`/api/reservas/${reservaId}`);
-      if (!res.ok) throw new Error("No se pudo obtener la reserva");
-      const reserva = await res.json();
+async function cargarDatosReserva() {
+  try {
+    const res = await fetch(`/api/reservas/${reservaId}`);
+    if (!res.ok) throw new Error("No se pudo obtener la reserva");
+    const reserva = await res.json();
 
-    tipoReserva.value = reserva.tipoReserva;
-    fechaHora.value = new Date(reserva.fechaHora).toISOString().split("T")[0];
-    hora.value = new Date(reserva.fechaHora).toTimeString().slice(0,5);
-    sucursal.value = reserva.sucursal.nombre;
-    nombreSolicitante.value = reserva.solicitante?.nombre || "";
-    correoSolicitante.value = reserva.solicitante?.correo || "";
-    empresaSolicitante.value = reserva.empresa?.nombre || "";
-  
-     trabajadoresContainer.innerHTML = "";
-      reserva.reservasTrabajador.forEach((rt, index) => {
-        const div = document.createElement("div");
-        div.className = "mb-3 trabajador-item";
-        div.innerHTML = `
-          <label>Nombre</label>
-          <input type="text" class="form-control" name="nombreTrabajador" value="${rt.trabajador.nombre}" required>
-          <label>RUT/Pasaporte</label>
-          <input type="text" class="form-control" name="rutTrabajador" value="${rt.trabajador.rutPasaporte}" required>
-          <label>Cargo</label>
-          <input type="text" class="form-control" name="cargoTrabajador" value="${rt.cargo}" required>
-          <label>Edad</label>
-          <input type="number" class="form-control" name="edadTrabajador" value="${rt.edad}" required>
-          <label>Correo</label>
-          <input type="email" class="form-control" name="correoTrabajador" value="${rt.correo ?? ""}">
-          <hr>
-        `;
-        trabajadoresContainer.appendChild(div);
-      });
-
-      await cargarOpcionesSelect("/api/baterias-medicas", bateriasMedicas, reserva.bateriasMedicas);
-      await cargarOpcionesSelect("/api/examenes-adicionales", examenesAdicionales, reserva.examenesAdicionales);
-      await cargarOpcionesSelect("/api/pruebas-drogas", pruebasDrogas, reserva.pruebasDrogas);
-
-    } catch (err) {
-      alert("Error al cargar la reserva");
-      console.error(err);
+    if (reserva.estado === "cancelada") {
+      alert("Esta reserva ya está cancelada y no se puede modificar.");
+      window.location.href = "/";
+      return;
     }
+
+    // Función auxiliar para obtener elementos según clase y tipo
+    function getCampo(clase, tipoReserva) {
+      const contenedor = tipoReserva === "particular"
+        ? document.getElementById("datosParticular")
+        : document.getElementById("datosEmpresa");
+      return contenedor.querySelector(`.${clase}`);
+    }
+
+    // Mostrar la sección correspondiente y ocultar la otra
+    if (reserva.tipoReserva === "particular") {
+      document.getElementById("datosParticular").style.display = "block";
+      document.getElementById("datosEmpresa").style.display = "none";
+    } else {
+      document.getElementById("datosEmpresa").style.display = "block";
+      document.getElementById("datosParticular").style.display = "none";
+    }
+
+    const tipo = reserva.tipoReserva;
+
+    // Asignar valores a inputs generales
+    getCampo("tipoReserva", tipo).value = reserva.tipoReserva;
+    getCampo("fechaHora", tipo).value = new Date(reserva.fechaHora).toISOString().split("T")[0];
+    getCampo("hora", tipo).value = new Date(reserva.fechaHora).toTimeString().slice(0, 5);
+    getCampo("sucursal", tipo).value = reserva.sucursal.nombre;
+
+    // Solo para empresa: llenar datos solicitante
+    if (tipo !== "particular") {
+      getCampo("nombreSolicitante", tipo).value = reserva.solicitante?.nombre || "";
+      getCampo("correoSolicitante", tipo).value = reserva.solicitante?.correo || "";
+      getCampo("empresaSolicitante", tipo).value = reserva.empresa?.nombre || "";
+    }
+
+    // Cargar trabajadores
+    const trabajadoresContainer = getCampo("trabajadoresContainer", tipo);
+    trabajadoresContainer.innerHTML = ""; // Limpiar
+
+    reserva.reservasTrabajador.forEach(rt => {
+      const div = document.createElement("div");
+      div.className = "mb-3 trabajador-item";
+      div.innerHTML = `
+        <label>Nombre</label>
+        <input type="text" class="form-control" name="nombreTrabajador" value="${rt.trabajador.nombre}" required>
+        <label>RUT/Pasaporte</label>
+        <input type="text" class="form-control" name="rutTrabajador" value="${rt.trabajador.rutPasaporte}" required>
+        <label>Cargo</label>
+        <input type="text" class="form-control" name="cargoTrabajador" value="${rt.cargo}" required>
+        <label>Edad</label>
+        <input type="number" class="form-control" name="edadTrabajador" value="${rt.edad}" required>
+        <label>Correo</label>
+        <input type="email" class="form-control" name="correoTrabajador" value="${rt.correo ?? ""}">
+        <hr>
+      `;
+      trabajadoresContainer.appendChild(div);
+    });
+
+    // Cargar selects múltiples
+    await cargarOpcionesSelect("/api/baterias-medicas", getCampo("bateriasMedicas", tipo), reserva.bateriasMedicas);
+    await cargarOpcionesSelect("/api/examenes-adicionales", getCampo("examenesAdicionales", tipo), reserva.examenesAdicionales);
+    await cargarOpcionesSelect("/api/pruebas-drogas", getCampo("pruebasDrogas", tipo), reserva.pruebasDrogas);
+
+  } catch (err) {
+    alert("Error al cargar la reserva");
+    console.error(err);
   }
+}
 
 document.getElementById("formEditarReserva").addEventListener("submit", async (e) => {
-    e.preventDefault();
-console.log("Formulario enviado");
+  e.preventDefault();
+  console.log("Formulario enviado");
 
-const trabajadores = Array.from(document.querySelectorAll(".trabajador-item")).map(div => ({
-  nombre: div.querySelector('[name="nombreTrabajador"]').value,
-  rut: div.querySelector('[name="rutTrabajador"]').value,
-  edad: div.querySelector('[name="edadTrabajador"]').value,
-  cargo: div.querySelector('[name="cargoTrabajador"]').value,
-  correo: div.querySelector('[name="correoTrabajador"]').value
-}));
+  // Oculta campos de la sección no visible para evitar errores de validación
+  const form = document.getElementById("formEditarReserva");
+  const divEmpresa = document.getElementById("datosEmpresa");
+  const divParticular = document.getElementById("datosParticular");
+ 
+const tipoReserva = document.querySelector(".tipoReserva");
+const fechaHora = document.querySelector(".fechaHora");
+const hora = document.querySelector(".hora");
+const bateriasMedicas = document.querySelector(".bateriasMedicas");
+const examenesAdicionales = document.querySelector(".examenesAdicionales");
+const pruebasDrogas = document.querySelector(".pruebasDrogas");
 
- const payload = {
-      tipoReserva: tipoReserva.value,
-      fechaHora: `${fechaHora.value}T${hora.value}`, 
-      bateriasMedicas: getSelectValues(bateriasMedicas),
-      examenesAdicionales: getSelectValues(examenesAdicionales),
-      pruebasDrogas: getSelectValues(pruebasDrogas),
-      trabajadores
-    };
-console.log("Payload a enviar:", payload);
-try {
-      const res = await fetch(`/api/reservas/${reservaId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
 
-      const data = await res.json();
-      if (res.ok) {
-        alert("Reserva actualizada correctamente.");
-        window.location.href = "/";
-      } else {
-        alert(data.error || "Error al actualizar");
-      }
-    } catch (err) {
-      alert("Error al enviar los datos");
-      console.error(err);
+   // Quitar todos los 'required'
+  form.querySelectorAll("input[required], select[required]").forEach(input => {
+    input.removeAttribute("required");
+  });
+
+  // Activar solo los que están visibles y marcados con data-requiere-validacion
+  const visibleSection = divEmpresa.style.display !== "none" ? divEmpresa : divParticular;
+  visibleSection.querySelectorAll("input, select").forEach(input => {
+    if (input.matches("[data-requiere-validacion]")) {
+      input.setAttribute("required", "required");
     }
   });
+
+  // --- Construcción del payload ---
+  const trabajadores = Array.from(document.querySelectorAll(".trabajador-item")).map(div => ({
+    nombre: div.querySelector('[name="nombreTrabajador"]').value,
+    rut: div.querySelector('[name="rutTrabajador"]').value,
+    edad: div.querySelector('[name="edadTrabajador"]').value,
+    cargo: div.querySelector('[name="cargoTrabajador"]').value,
+    correo: div.querySelector('[name="correoTrabajador"]').value
+  }));
+
+  const payload = {
+    tipoReserva: tipoReserva.value,
+    fechaHora: `${fechaHora.value}T${hora.value}`,
+    bateriasMedicas: getSelectValues(bateriasMedicas),
+    examenesAdicionales: getSelectValues(examenesAdicionales),
+    pruebasDrogas: getSelectValues(pruebasDrogas),
+    trabajadores
+  };
+
+  console.log("Payload a enviar:", payload);
+
+  try {
+    const res = await fetch(`/api/reservas/${reservaId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      if (data.estado === "cancelada") {
+        alert("La reserva indicada está cancelada.");
+      } else {
+        alert("Reserva actualizada correctamente.");
+        window.location.href = "/";
+      }
+    } else {
+      alert(data.error || "Error al actualizar");
+    }
+  } catch (err) {
+    alert("Error al enviar los datos");
+    console.error(err);
+  }
+});
+
+
 
 document.getElementById("btnCancelar").addEventListener("click", () => {
   window.location.href = "index.html";
