@@ -119,28 +119,43 @@ export async function crearReserva(req, res) {
 
       if (tipoReserva === 'empresa' && solicitante?.correo) {
         const empresaNombre = reservaConDetalle.empresa?.nombre || 'Empresa no registrada';
-        const mensaje = `
-Estimado ${solicitante.nombre}, tu reserva ha sido registrada correctamente.
+
+    const trabajadoresTexto = reservaConDetalle.reservasTrabajador.map((rt, index) => {
+    const trabajador = rt.trabajador;
+    return `👤 Trabajador ${index + 1}:
+    - Nombre: ${trabajador.nombre}
+    - RUT/Pasaporte: ${trabajador.rutPasaporte}
+    - Cargo: ${rt.cargo}
+    - Edad: ${rt.edad}
+    - Correo: ${rt.correo || 'No informado'}`;
+  }).join('\n\n');
+
+const mensaje = `Estimado/a ${solicitante.nombre}, tu reserva ha sido registrada correctamente.
 
 🆔 ID de Reserva: ${reservaId}
 🏢 Empresa: ${empresaNombre}
 📍 Sucursal: ${sucursalNombre}
 📅 Fecha y hora: ${fechaFormateada}
+👥 Trabajadores incluidos en la reserva:
+ ${trabajadoresTexto}
 
 Gracias por agendar con nosotros.
+
+Recuerda que puede modificar esta reserva desde nuestro sitio web.
         `;
         await sendConfirmationEmail(solicitante.correo, 'Confirmación de reserva', mensaje);
       }
 
       if (tipoReserva === 'particular' && trabajadorInfo?.correo) {
         const mensaje = `
-Estimado ${trabajadorInfo.nombre}, tu reserva ha sido registrada correctamente.
+Estimado/a ${trabajadorInfo.nombre}, tu reserva ha sido registrada correctamente.
 
 🆔 ID de Reserva: ${reservaId}
 📍 Sucursal: ${sucursalNombre}
 📅 Fecha y hora: ${fechaFormateada}
 
 Gracias por agendar con nosotros.
+Recuerda que puede modificar o cancelar esta reserva desde nuestro sitio web.
         `;
         await sendConfirmationEmail(trabajadorInfo.correo, 'Confirmación de reserva', mensaje);
       }
