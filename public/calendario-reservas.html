@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Calendario de Reservas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/calendario-reservas.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js"></script>
+</head>
+
+<body>
+
+     <div class="sidebar">
+    <button type="button" class="btn btn-estadisticas"  onclick="location.href='estadisticas.html'" data-bs-toggle="modal" data-bs-target="#modalEstadisticas">
+  Estadisticas Reservas</button>
+    <button type="button" class="btn btn-reportes" onclick="location.href='reportes.html'" data-bs-toggle="modal" data-bs-target="#modalReportes">
+  Reportes Reservas</button>
+  </div>
+
+    <div class="container">
+        <button class="logout-btn" id="btnLogout">Cerrar sesión</button>
+        <center>
+            <h1 id="tituloCalendario">Calendario de Reservas</h1>
+        </center>
+        <div class="filtros-barra" id="filtroSucursalBarra" style="display:none;">
+            <label for="sucursalFiltro">Sucursal:</label>
+            <select id="sucursalFiltro"></select>
+            <button id="verCalendarioBtn">
+                <svg height="18" width="18" viewBox="0 0 20 20" fill="none">
+                    <rect width="20" height="20" fill="none" />
+                    <path
+                        d="M6 2V4M14 2V4M3 8.5H17M5 6H15C16.1046 6 17 6.89543 17 8V16C17 17.1046 16.1046 18 15 18H5C3.89543 18 3 17.1046 3 16V8C3 6.89543 3.89543 3 5 6Z"
+                        stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Ver calendario
+            </button>
+        </div>
+        <div id="calendar"></div>
+        <div id="detalleReserva"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js"></script>
+    <script>
+        const apiUrl = "http://localhost:3000/api";
+        let reservas = [];
+        let reservasPorId = {};
+        let calendar = null;
+        let sucursales = [];
+
+        if (!sessionStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
+
+        // Helper: actualizar título
+        function actualizarTituloCalendario(nombreSucursal) {
+            document.getElementById('tituloCalendario').textContent = `Calendario de ${nombreSucursal}`;
+        }
+
+        // Cierre de sesión
+        document.getElementById('btnLogout').onclick = function () {
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        };
+
+        // Obtener datos de usuario del token (payload JWT)
+        function obtenerUsuarioActual() {
+            const token = sessionStorage.getItem('token');
+            if (!token) return null;
+            // Decodificar el token (base64), sin validar la firma por simplicidad (NO para producción)
+            try {
+                const payload = token.split('.')[1];
+                const decoded = JSON.parse(atob(payload));
+                // Valida expiración JWT
+                if (decoded.exp && (Date.now() / 1000) > decoded.exp) {
+                    localStorage.removeItem('token');
+                    return null;
+                }
+                return decoded;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function fetchSucursales() {
+            const token = sessionStorage.getItem('token');
+            const res = await fetch(apiUrl + "/catalogos/sucursales", {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            sucursales = await res.json();
+            const select = document.getElementById('sucursalFiltro');
+            select.innerHTML = '<option value="">Seleccione...</option>' +
+                sucursales.map(s => `<option value="${s.id}">${s.nombre}</option>`).join('');
+        }
+
+        async function fetchReservas() {
+            const token = sessionStorage.getItem('token');
+            const res = await fetch(apiUrl + '/reservas', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            if (res.status === 401) {
+                alert("Tu sesión ha expirado. Debes iniciar sesión nuevamente.");
+                sessionStorage.removeItem('token');
+                window.location.href = 'login.html';
+                return;
+            }
+            const data = await res.json();
+            // resto igual...
+
+            reservas = data;
+            reservasPorId = {};
+            for (const r of reservas) reservasPorId[r.id] = r;
+        }
+
+        function renderCalendar(sucursalId, nombreSucursal) {
+            const reservasFiltradas = reservas.filter(r => String(r.sucursalId) === String(sucursalId));
+            const eventos = reservasFiltradas.map(r => ({
+                id: String(r.id),
+                title: (r.tipoReserva === 'empresa' && r.empresa?.nombre)
+                    ? r.empresa.nombre
+                    : (r.tipoReserva === 'particular' && r.reservasTrabajador?.[0]?.trabajador?.nombre)
+                        ? r.reservasTrabajador[0].trabajador.nombre
+                        : 'Reserva',
+                start: r.fechaHora,
+                backgroundColor: r.tipoReserva === "empresa" ? "#007bff" : "#22bb33",
+                borderColor: "#333"
+            }));
+
+            const calendarEl = document.getElementById('calendar');
+            calendarEl.innerHTML = '';
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'es',
+                initialView: 'dayGridMonth',
+                events: eventos,
+                eventClick: function (info) {
+                    mostrarDetalleReserva(reservasPorId[info.event.id]);
+                },
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listMonth'
+                },
+                eventDidMount: function (info) {
+                    info.el.title = "Click para ver detalle";
+                }
+            });
+
+            calendar.render();
+            document.getElementById('detalleReserva').innerHTML = '';
+            actualizarTituloCalendario(nombreSucursal);
+        }
+
+        function mostrarDetalleReserva(reserva) {
+            let html = `
+                <h3>Reserva #${reserva.id}</h3>
+                <strong>Tipo de Reserva:</strong> ${reserva.tipoReserva?.toUpperCase() || '-'}<br>
+                <strong>Sucursal:</strong> ${reserva.sucursal?.nombre || '-'}<br><br>
+            `;
+            // EMPRESA
+            if (reserva.tipoReserva === 'empresa') {
+                html += `
+                  <strong>Empresa:</strong> ${reserva.empresa?.nombre || '-'}<br>
+                  <strong>RUT:</strong> ${reserva.empresa?.rut || '-'}<br>
+                  <strong>Dirección:</strong> ${reserva.empresa?.direccion || '-'}<br>
+                  <strong>Giro:</strong> ${reserva.empresa?.giro || '-'}<br><br>
+                  <strong>Solicitante:</strong> ${reserva.solicitante?.nombre || '-'}<br>
+                  <strong>Cargo:</strong> ${reserva.solicitante?.cargo || '-'}<br>
+                  <strong>Teléfono:</strong> ${reserva.solicitante?.telefono || '-'}<br>
+                  <strong>Correo:</strong> ${reserva.solicitante?.correo || '-'}<br><br>
+                `;
+                html += `<strong>Trabajadores:</strong>`;
+                if (reserva.reservasTrabajador?.length) {
+                    html += `<ul>`;
+                    html += reserva.reservasTrabajador.map(rt => `
+                        <li>
+                          <b>Nombre:</b> ${rt.trabajador?.nombre ?? ''} -
+                          <b>RUT/Pasaporte:</b> ${rt.trabajador?.rutPasaporte ?? ''} -
+                          <b>Edad:</b> ${rt.edad ?? '-'} -
+                          <b>Cargo:</b> ${rt.cargo ?? '-'}
+                          ${rt.correo ? '- <b>Correo:</b> ' + rt.correo : ''}
+                        </li>
+                    `).join('');
+                    html += `</ul>`;
+                } else {
+                    html += ' <span class="sin-reservas">Sin trabajadores asociados</span>';
+                }
+            }
+            // PARTICULAR
+            if (reserva.tipoReserva === 'particular') {
+                const t = reserva.reservasTrabajador && reserva.reservasTrabajador[0];
+                html += `<strong>Datos:</strong><br><br>`;
+                if (t) {
+                    html += `
+                        <strong>Nombre:</strong> ${t.trabajador?.nombre ?? ''}<br>
+                        <strong>RUT/Pasaporte:</strong> ${t.trabajador?.rutPasaporte ?? ''}<br>
+                        <strong>Edad:</strong> ${t.edad ?? '-'}<br>
+                        <strong>Cargo:</strong> ${t.cargo ?? '-'}<br>
+                        ${t.correo ? '<strong>Correo:</strong> ' + t.correo : ''}<br>
+                    `;
+                } else {
+                    html += ' <span class="sin-reservas">Sin trabajadores asociados</span>';
+                }
+            }
+
+            if (reserva.bateriasMedicas?.length) {
+                html += `<br><strong>Baterías Médicas:</strong> ${reserva.bateriasMedicas.map(b => b.nombre).join(', ')}`;
+            }
+            if (reserva.examenesAdicionales?.length) {
+                html += `<br><strong>Exámenes Adicionales:</strong> ${reserva.examenesAdicionales.map(e => e.nombre).join(', ')}`;
+            }
+            if (reserva.pruebasDrogas?.length) {
+                html += `<br><strong>Pruebas de Drogas:</strong> ${reserva.pruebasDrogas.map(p => p.nombre).join(', ')}`;
+            }
+            document.getElementById('detalleReserva').innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Verifica login
+            const user = obtenerUsuarioActual();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            await fetchSucursales();
+
+            // Si el usuario es admin, muestra filtro de sucursal
+            if (user.rol === 'admin') {
+                document.getElementById('filtroSucursalBarra').style.display = '';
+                // Esperar a que seleccione sucursal
+                document.getElementById('verCalendarioBtn').addEventListener('click', async () => {
+                    const sucursalId = document.getElementById('sucursalFiltro').value;
+                    if (!sucursalId) {
+                        alert("Selecciona una sucursal para ver el calendario.");
+                        return;
+                    }
+                    const sucursalNombre = document.getElementById('sucursalFiltro').selectedOptions[0].textContent;
+                    await fetchReservas(sucursalId);
+                    renderCalendar(sucursalId, sucursalNombre);
+                });
+            } else {
+                // Si es usuario sucursal, muestra directamente su calendario
+                // Busca la sucursalId y nombre
+                const sucursalId = user.sucursalId;
+                const sucursal = sucursales.find(s => String(s.id) === String(sucursalId));
+                const nombreSucursal = sucursal ? sucursal.nombre : 'Sucursal';
+                await fetchReservas(sucursalId);
+                renderCalendar(sucursalId, nombreSucursal);
+            }
+        });
+    </script>
+</body>
+
+</html>
