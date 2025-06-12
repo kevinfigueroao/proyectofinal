@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes de Reservas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/reporte.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/es.global.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body>  
+  <body class="bg-light d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
+    <h2 class="mb-4 text-center">Exportar Reporte de Reservas</h2>
+    <form id="exportar">
+      <div class="mb-3">
+        <label for="desde" class="form-label">Desde:</label>
+        <input type="date" id="desde" name="desde" class="form-control" required />
+      </div>
+      <div class="mb-4">
+        <label for="hasta" class="form-label">Hasta:</label>
+        <input type="date" id="hasta" name="hasta" class="form-control" required />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Exportar Excel</button>
+    </form>
+  </div>
+</body>
+
+<script>
+    const apiUrl = 'http://localhost:3000/api';
+    document.getElementById('exportar').addEventListener('submit', async (e) => {
+      e.preventDefault();
+     
+    const desde = document.getElementById('desde').value;
+    const hasta = document.getElementById('hasta').value;
+
+    if (!desde || !hasta) {
+      alert('Por favor selecciona ambas fechas');
+      return;
+    }
+
+    // Redirige a la URL de descarga con los parámetros
+    window.location.href = `${apiUrl}/exportar?desde=${desde}&hasta=${hasta}`;
+    });
+  </script>

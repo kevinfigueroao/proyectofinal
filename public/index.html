@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Formulario de Reserva</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<!-- Bootstrap 5 CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css"
+		rel="stylesheet" />
+	<link rel="stylesheet" href="css/index.css" />
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-3">
+		<div class="container-fluid">
+			<a class="navbar-brand fw-bold" href="#">
+				<img src="img/logo.png" alt="Logo" height="38" class="me-2 align-middle" />
+			</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarOpciones">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarOpciones">
+				<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+					<li class="nav-item">
+						<button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal"
+							data-bs-target="#modalModificarReserva">
+							Modificar Reserva
+						</button>
+					</li>
+					<li class="nav-item">
+						<button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
+							data-bs-target="#modalCancelarReserva">
+							Cancelar Reserva
+						</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="container p-4 shadow">
+		<h1 class="mb-4 text-center">Reserva Hora</h1>
+		<form id="reservaForm" autocomplete="off">
+			<div class="form-section">
+				<div class="row g-3 align-items-end">
+					<div class="col-md-4">
+						<label for="tipoReserva" class="form-label">Tipo de Reserva</label>
+						<select class="form-select" id="tipoReserva" required>
+							<option value="empresa">Empresa</option>
+							<option value="particular">Particular</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label for="sucursalId" class="form-label">Sucursal</label>
+						<select class="form-select" id="sucursalId" required></select>
+					</div>
+					<div class="col-md-4">
+						<label for="fechaReserva" class="form-label">Fecha</label>
+						<input type="date" class="form-control" id="fechaReserva" required />
+					</div>
+					<div class="col-md-4">
+						<label for="horaReserva" class="form-label">Hora</label>
+						<select class="form-select" id="horaReserva" required></select>
+					</div>
+				</div>
+			</div>
+
+			<!-- EMPRESA y SOLICITANTE -->
+			<div id="empresaFieldset" class="form-section">
+				<fieldset class="border p-3 mb-2">
+					<legend class="float-none w-auto text-primary fw-bold">Datos de la Empresa</legend>
+					<div class="row g-3 align-items-end">
+						<div class="col-md-6">
+							<label class="form-label">RUT Empresa</label>
+							<div class="input-group">
+								<input type="text" class="form-control" id="empRUT" />
+								<button type="button" class="btn btn-secondary" id="buscarEmpresaBtn">Buscar
+									Empresa</button>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Nombre Empresa</label>
+							<input type="text" class="form-control" id="empNombre" />
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Dirección Empresa</label>
+							<input type="text" class="form-control" id="empDireccion" />
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Giro Empresa</label>
+							<input type="text" class="form-control" id="empGiro" />
+						</div>
+					</div>
+				</fieldset>
+				<fieldset class="border p-3 mt-2">
+					<legend class="float-none w-auto text-primary fw-bold">Datos del Solicitante</legend>
+					<div class="row g-3">
+						<div class="col-md-6">
+							<label class="form-label">Nombre Solicitante</label>
+							<input type="text" class="form-control" id="solNombre" />
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Cargo Solicitante</label>
+							<input type="text" class="form-control" id="solCargo" />
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Teléfono Solicitante</label>
+							<input type="tel" class="form-control" id="solTelefono" />
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Correo Solicitante</label>
+							<input type="email" class="form-control" id="solCorreo" />
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<!-- FIN EMPRESA/SOLICITANTE -->
+
+			<div id="trabajadoresFieldsetEmpresa" class="form-section">
+				<fieldset class="border p-3">
+					<legend class="float-none w-auto">Trabajadores (Empresa)</legend>
+					<div id="trabajadoresContainer"></div>
+					<button type="button" class="btn btn-outline-primary mt-3 add-btn" id="addTrabajadorBtn">Agregar
+						Trabajador</button>
+				</fieldset>
+			</div>
+
+			<div id="trabajadorFieldsetParticular" class="form-section d-none">
+				<fieldset class="border p-3">
+					<legend class="float-none w-auto">Trabajador (Particular)</legend>
+					<div class="row g-3">
+						<div class="col-md-4">
+							<label class="form-label">Nombre</label>
+							<input type="text" class="form-control" id="trabNombre" />
+						</div>
+						<div class="col-md-4">
+							<label class="form-label">RUT/Pasaporte</label>
+							<input type="text" class="form-control" id="trabRut" />
+						</div>
+						<div class="col-md-2">
+							<label class="form-label">Edad</label>
+							<input type="number" min="0" class="form-control" id="trabEdad" />
+						</div>
+						<div class="col-md-4">
+							<label class="form-label">Cargo</label>
+							<input type="text" class="form-control" id="trabCargo" />
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Correo</label>
+							<input type="email" class="form-control" id="trabCorreo" required />
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
+			<div class="form-section">
+				<fieldset class="border p-3">
+					<legend class="float-none w-auto">Baterías Médicas</legend>
+					<div id="bateriasList" class="row"></div>
+				</fieldset>
+				<fieldset class="border p-3 mt-2">
+					<legend class="float-none w-auto">Exámenes Adicionales</legend>
+					<div id="examenesList" class="row"></div>
+				</fieldset>
+				<fieldset class="border p-3 mt-2">
+					<legend class="float-none w-auto">Pruebas de Drogas</legend>
+					<div id="pruebasList" class="row"></div>
+				</fieldset>
+			</div>
+			<div class="d-flex justify-content-between align-items-center mt-4">
+				<button type="submit" class="btn btn-primary">Crear Reserva</button>
+				<button type="button" class="btn btn-success" id="verCalendarioBtn">Ver Calendario</button>
+			</div>
+			<pre id="crearResult" class="mt-3" style="display:none"></pre>
+		</form>
+	</div>
+
+	<!-- MODAL Bootstrap para mostrar info reserva -->
+	<div class="modal fade" id="modalReservaCreada" tabindex="-1" aria-labelledby="modalReservaLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalReservaLabel">Reserva creada exitosamente</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				</div>
+				<div class="modal-body" id="modalReservaBody"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="okModalBtn" data-bs-dismiss="modal">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modificar Reserva -->
+	<div class="modal fade" id="modalModificarReserva" tabindex="-1" aria-labelledby="modalModificarReservaLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalModificarReservaLabel">Modificar Reserva</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				</div>
+				<div class="modal-body">
+					<label for="reservaId">Ingrese el ID de la reserva:</label>
+					<input type="text" id="reservaId" class="form-control" placeholder="Ej: 123" />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary" onclick="buscarReservaPorId()">Continuar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Cancelar Reserva -->
+	<div class="modal fade" id="modalCancelarReserva" tabindex="-1" aria-labelledby="modalCancelarReservaLabel"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Cancelar Reserva</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				</div>
+				<div class="modal-body">
+					<label for="reservaIdCancelar">Ingrese el ID de la reserva:</label>
+					<input type="text" id="reservaIdCancelar" class="form-control" placeholder="Ej: 123" />
+					<p class="mt-3 text-danger d-none" id="mensajeConfirmacion">¿Está seguro que desea cancelar esta
+						reserva?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-warning" id="btnConfirmarCancelar"
+						style="display: none;">Confirmar Cancelación</button>
+					<button type="button" class="btn btn-primary" onclick="validarReservaParaCancelar()">Buscar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="js/index.js"></script>
+</body>
+
+</html>

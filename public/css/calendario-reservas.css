@@ -1,0 +1,371 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container principal del calendario */
+.container {
+    max-width: 1050px;
+    margin: 32px auto 0 auto;
+    background: #fff;
+    padding: 2em 2em 2.5em 2em;
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+    position: relative;
+}
+
+/* FullCalendar */
+#calendar {
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.fc-event {
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 6px rgba(90, 90, 90, 0.05);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.fc-event:hover {
+    box-shadow: 0 3px 12px rgba(40, 90, 200, 0.12);
+    transform: scale(1.03);
+    z-index: 10;
+}
+
+.fc-daygrid-event-dot {
+    display: none !important;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+    border-radius: 10px;
+    border: 1px solid #e2e7ee;
+}
+
+.fc-daygrid-block-event .fc-event-title,
+.fc-list-event-title {
+    font-weight: bold;
+}
+
+.fc-list-event {
+    border-radius: 6px !important;
+}
+
+/* COLORES DE ESTADO DE LAS RESERVAS */
+/* ---- PENDIENTE ---- */
+.fc-event-pendiente {
+    background: #bcbcbc !important;
+    border: 1.5px solid #999 !important;
+    color: #333 !important;
+}
+
+/* ---- COMPLETADO ---- */
+.fc-event-completado {
+    background: #38d175 !important;
+    border: 1.5px solid #178a3a !important;
+    color: #fff !important;
+}
+
+/* ---- CANCELADO ---- */
+.fc-event-cancelado {
+    background: #ee3c37 !important;
+    border: 1.5px solid #ae2320 !important;
+    color: #fff !important;
+}
+
+/* Ajustes para vista LIST */
+.fc-list-event.fc-event-pendiente {
+    background: #f2f2f2 !important;
+    color: #525252 !important;
+}
+
+.fc-list-event.fc-event-completado {
+    background: #d6fbe3 !important;
+    color: #178a3a !important;
+}
+
+.fc-list-event.fc-event-cancelado {
+    background: #ffd6d4 !important;
+    color: #ae2320 !important;
+}
+
+/* Contraste para el texto de eventos */
+.fc-event-title,
+.fc-list-event-title {
+    font-weight: bold;
+    letter-spacing: .5px;
+    font-size: 1.05em;
+}
+
+/* Filtros y barra superior */
+.filtros-barra {
+    display: flex;
+    align-items: center;
+    gap: 1.5em;
+    justify-content: flex-start;
+    padding: 1.5em 0;
+    background: #f3faff;
+    border-radius: 7px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(34, 187, 51, 0.06);
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 650px) {
+    .filtros-barra {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .container {
+        padding: 7px;
+    }
+}
+
+.logout-btn,
+#cerrarSesionBtn {
+    position: absolute;
+    top: 18px;
+    right: 24px;
+    background: #e5322d;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background 0.2s;
+    z-index: 10;
+
+}
+
+.logout-btn:hover,
+#cerrarSesionBtn:hover {
+    background: #b91d17;
+}
+
+@media (max-width: 650px) {
+
+    .logout-btn,
+    #cerrarSesionBtn {
+        top: 7px;
+        right: 7px;
+        padding: 7px 12px;
+    }
+}
+
+/* Barra superior personalizada y moderna */
+.navbar-superior {
+    width: 100%;
+    background: linear-gradient(90deg, #2866c7 0%, #214b7c 100%);
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 4px 18px rgba(40, 102, 199, 0.12);
+    min-height: 62px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6em 2.5em 0.6em 1.2em;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-superior .navbar-izquierda,
+.navbar-superior .navbar-derecha {
+    justify-content: flex-start;
+    gap: 1.5em;
+}
+
+.navbar-superior .btn-nav {
+    background: #fff;
+    color: #2866c7;
+    font-weight: 600;
+    border-radius: 7px;
+    border: 2px solid #e3e9f7;
+    padding: 7px 20px;
+    font-size: 1.04em;
+    margin-right: 6px;
+    box-shadow: 0 2px 7px rgba(30, 80, 200, 0.10);
+    transition: background 0.15s, color 0.15s, border 0.15s;
+}
+
+.navbar-superior .btn-nav:hover {
+    background: #2866c7;
+    color: #fff;
+    border-color: #fff;
+}
+
+.navbar-superior .logout-btn {
+    background: #ee4744;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 18px;
+    font-size: 1em;
+    box-shadow: 0 2px 8px rgba(230, 71, 68, 0.13);
+    transition: background 0.15s, color 0.15s;
+}
+
+.navbar-superior .logout-btn:hover {
+    background: #b92320;
+    color: #fff;
+}
+
+
+.navbar-superior .navbar-derecha {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    /* Sin gap extra aquí */
+}
+
+.navbar-superior .logout-btn {
+    margin-left: 0;
+    margin-right: 0.1em;
+}
+
+
+@media (max-width: 800px) {
+    .navbar-superior {
+        flex-direction: column;
+        padding: 1em 1.2em;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .navbar-superior .navbar-izquierda,
+    .navbar-superior .navbar-derecha {
+        gap: 0.7em;
+    }
+}
+
+@media (max-width: 500px) {
+    .navbar-superior {
+        padding: 0.8em 0.3em;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .navbar-superior .btn-nav,
+    .navbar-superior .logout-btn {
+        font-size: 0.95em;
+        padding: 7px 10px;
+    }
+}
+
+
+.sin-reservas {
+    color: #888;
+    font-style: italic;
+}
+
+/* Detalle de reserva/Modal */
+#detalleReserva,
+#modalDetalleBody {
+    margin-top: 30px;
+    background: #f6fbff;
+    padding: 16px 16px 12px 16px;
+    border-radius: 7px;
+    border: 1px solid #d2eaff;
+    font-size: 1.08em;
+}
+
+.modal-content {
+    border-radius: 14px;
+}
+
+/* Badges colores */
+.badge.bg-success {
+    background: #28a745 !important;
+}
+
+.badge.bg-danger {
+    background: #d9534f !important;
+}
+
+.badge.bg-secondary {
+    background: #7a7a7a !important;
+}
+
+/* Mejoras en el botón de marcar asistencia */
+.btn-outline-success {
+    border-radius: 7px !important;
+    font-size: .97em;
+    font-weight: 500;
+}
+
+ul {
+    margin-bottom: 0 !important;
+    padding-left: 20px;
+}
+
+/* Responsive ajustes */
+@media (max-width: 900px) {
+
+    .container,
+    #calendar {
+        max-width: 98vw;
+        padding: 6px;
+    }
+
+    .navbar .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+/* -------- MODAL RESERVA -------- */
+.modal-reserva {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(44, 62, 80, 0.22);
+}
+
+.modal-reserva-content {
+    background-color: #f6fbff;
+    margin: 50px auto;
+    padding: 28px 28px 16px 28px;
+    border-radius: 12px;
+    border: 1.5px solid #d2eaff;
+    max-width: 520px;
+    width: 94vw;
+    box-shadow: 0 5px 28px rgba(44, 62, 80, 0.16);
+    position: relative;
+}
+
+.modal-reserva-close {
+    color: #333;
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 1.7em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color .2s;
+}
+
+.modal-reserva-close:hover {
+    color: #e74c3c;
+}
+
+.badge.bg-naranja {
+    background: #fd7e14 !important;
+    /* Naranja fuerte */
+}
