@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Estadísticas</title>
+  <link rel="stylesheet" href="css/estadisticas.css" />
+  <!-- ApexCharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+
+<body>
+  <nav class="navbar-superior">
+    <div class="navbar-izquierda">
+
+      <button type="button" class="btn-nav" onclick="abrirModalExportar()">📤 Reportes Reservas</button>
+      <button type="button" class="btn-nav" onclick="location.href='calendario-reservas.html'">📅 Ver calendario de
+        reservas</button>
+    </div>
+    <div class="navbar-derecha">
+      <button class="btn-logout" onclick="cerrarSesion()">🔓 Cerrar sesión</button>
+    </div>
+  </nav>
+  <div class="container-estadisticas">
+    <h1>📊 Estadísticas de Reservas</h1>
+
+    <div class="filtros-estadisticas">
+      <label for="periodoEstadistica">Periodo:</label>
+      <select id="periodoEstadistica">
+        <option value="dia">Día</option>
+        <option value="semana">Semana</option>
+        <option value="mes">Mes</option>
+      </select>
+      <input type="date" id="selectorFecha" />
+    </div>
+
+    <div id="total-trabajadores" class="total-trabajadores"></div>
+    <!-- Aquí irán todos los gráficos (uno por sucursal si eres admin) -->
+    <div id="charts-container" class="charts-container"></div>
+
+    <h2>Resumen por estado de la reserva</h2>
+    <div id="resumen-estados" class="resumen-estados"></div>
+
+
+  </div>
+  <script src="js/estadisticas.js"></script>
+</body>
+
+</html>
